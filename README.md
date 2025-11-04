@@ -299,9 +299,4 @@ git commit -m "docs(readme): add git commit convention section"
 
 ## 📝 License
 
-This project is licensed under the ISC License.
-
-## 📧 Support
----
-
-**Happy Coding! 🎉**
+This project is licensed under the MIT License.
