@@ -11,6 +11,7 @@ const LoginPage = () => {
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		console.log("Logging in with:", { username, password });
+
 		// connect to backend
 	};
 
@@ -70,7 +71,9 @@ const LoginPage = () => {
 					/>
 					<label
 						htmlFor="remember"
-						className={`lg:text-sm ${isRemembered ? "text-primary" : "text-neutral"}`}>
+						className={`text-xs md:text-sm hover:cursor-pointer ${
+							isRemembered ? "text-primary" : "text-neutral"
+						}`}>
 						Remember Me
 					</label>
 				</div>
@@ -85,8 +88,8 @@ const LoginPage = () => {
 				<p className="text-neutral text-xs text-center">
 					Don&apos;t have an account yet?
 					<Link
-						href="/user/signup"
-						className="text-primary font-semibold ml-1 p-2 shadow-md border border-gray-300 rounded-xl">
+						href="/signup"
+						className="text-primary font-semibold ml-1 p-2 shadow-md border border-gray-300 hover:bg-gray-100 rounded-xl">
 						Sign up
 					</Link>
 				</p>
