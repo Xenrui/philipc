@@ -13,7 +13,7 @@ With Next.js, the `client` and `server` folders are merged. The `app/` directory
 
 ```
 philipc/
-├── app/                      # Next.js App Router (handles all pages & logic)
+├── app/                    # Next.js App Router (handles all pages & logic)
 │   ├── (auth)/             # Route group for auth pages (login, signup)
 │   ├── (store)/            # Route group for main e-commerce (products, cart)
 │   ├── api/                # Server-side API routes (replaces 'server' folder)
@@ -25,10 +25,10 @@ philipc/
 ├── lib/                      # Helper functions, Supabase clients (client & server)
 ├── public/                   # Static assets (images, fonts)
 │
-├── db/                       # Database files (unchanged)
+├── database/                # Database files
 │   ├─ schema.sql            # Table definitions & RLS
-│   ├─ migrations/           # Schema changes
-│   └─ seeds/
+│   ├─ seeds.sql             # initial INSERTs
+│   └─ migrations/
 │
 ├── .env.local                # Environment variables (YOU CREATE THIS)
 ├── .env.example              # Environment template
