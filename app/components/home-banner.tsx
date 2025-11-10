@@ -2,7 +2,7 @@ import { MoveRight, ShieldCheck } from "lucide-react";
 import React from "react";
 const Banner = () => {
 	return (
-		<div className="flex w-full justify-center p-10 grid-rows-1 grid-cols-2 h-fit">
+		<div className="flex w-full max-w-7xl mx-auto justify-center py-10 grid-rows-1 grid-cols-2 h-fit">
 			{/* Left */}
 			<div className="flex flex-col justify-between min-h-80 gap-5 bg-blue-100 w-md rounded-3xl md:rounded-r-none p-7">
 				<div className="text-black">

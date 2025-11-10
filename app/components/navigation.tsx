@@ -7,13 +7,14 @@ import { moreItems, navItems } from "@/app/data/navItems";
 import { userSettings } from "@/app/data/userSettings";
 import Button from "@/app/components/button";
 import { Search, ChevronDown, CircleUser } from "lucide-react";
+import ThemeToggle from "@/app/components/ThemeToggle";
 
 const Navigation = () => {
 	const [dropdownOpen, setDropdownOpen] = useState(false);
 	const [userMenuOpen, setUserMenuOpen] = useState(false);
 
 	return (
-		<nav className="bg-gradient-blue z-999 sticky top-0 right-0 left-0 border-gray-200 dark:bg-gray-900">
+		<nav className="bg-linear-to-r from-[#003d4d] to-[#0081b3] dark:from-gray-900 dark:to-gray-900 z-999 sticky top-0 right-0 left-0 border-gray-200">
 			<div className={`flex items-center justify-between mx-auto py-4 px-5 md:px-10 lg:px-15`}>
 				{/* Logo */}
 				<Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -23,6 +24,7 @@ const Navigation = () => {
 				<div className="md:order-2 flex">
 					{/* SearchBar, SellButton, UserIcon */}
 					<div className="flex items-center space-x-3">
+						<ThemeToggle />
 						{/* Desktop Search Bar */}
 						<div className="hidden md:block relative">
 							<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

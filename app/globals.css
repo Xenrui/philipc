@@ -2,7 +2,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-	--background: oklch(96.7% 0.003 264.542)
+	--background: #f3f4f6;
 	--foreground: #171717;
 }
 
@@ -14,9 +14,7 @@
 }
 
 @layer utilities {
-	.bg-gradient-blue {
-		background-image: linear-gradient(to right, #003d4d, #0081b3);
-	}
+	
 }
 @keyframes pop-blob {
 	0% {
