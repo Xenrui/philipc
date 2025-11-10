@@ -12,7 +12,7 @@ interface ProductProps {
 
 const Products: React.FC<ProductProps> = ({ product, onClick }) => {
 	return (
-		<div className="inline min-h-50 bg-gray-50 dark:bg-gray-900 m-5 p-4 rounded-2xl">
+		<div className="flex flex-col min-h-50 bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl">
 			{/* User */}
 			<div className="flex items-center gap-2 mb-3">
 				<div className="rounded-4xl p-2 bg-blue-50">
@@ -33,7 +33,7 @@ const Products: React.FC<ProductProps> = ({ product, onClick }) => {
 			</div>
 
 			{/* Product Details */}
-			<div className="flex flex-col gap-1 text-black dark:text-white my-3">
+			<div className="grow flex flex-col gap-1 text-black dark:text-white my-3">
 				<span className="font-semibold text-lg">{product.item_name}</span>
 				<span>${product.item_price}</span>
 			</div>
