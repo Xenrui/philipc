@@ -1,10 +1,9 @@
 import React from "react";
 
-import products from "@/app/data/productMock.json";
-import Link from "next/link";
 import { User } from "lucide-react";
 import Image from "next/image";
-import Button from "@/app/components/button";
+import Button from "@/app/components/Button";
+import { Product } from "@/app/data/types";
 
 interface ProductProps {
 	product: Product;
@@ -33,16 +32,16 @@ const Products: React.FC<ProductProps> = ({ product, onClick }) => {
 				/>
 			</div>
 
-            {/* Product Details */}
-            <div className="flex flex-col gap-1 text-black dark:text-white my-3">
-                <span className="font-semibold text-lg">{product.item_name}</span>
-                <span>${product.item_price}</span>
-            </div>
+			{/* Product Details */}
+			<div className="flex flex-col gap-1 text-black dark:text-white my-3">
+				<span className="font-semibold text-lg">{product.item_name}</span>
+				<span>${product.item_price}</span>
+			</div>
 
-            {/* Button */}
-            <div className="flex justify-center">
-                <Button label="View Product"/>
-            </div>
+			{/* Button */}
+			<div className="flex justify-center">
+				<Button label="View Product" />
+			</div>
 		</div>
 	);
 };

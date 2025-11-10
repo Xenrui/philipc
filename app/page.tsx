@@ -1,11 +1,12 @@
 "use client";
 
-import Banner from "@/app/components/home-banner";
-import Navigation from "@/app/components/navigation";
+import Banner from "@/app/components/HomeBanner";
+import Navigation from "@/app/components/Navigation";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import products from "@/app/data/product.json";
+import products from "@/app/data/productMock.json";
 import Products from "@/app/components/Products";
+
 export default function Home() {
 	return (
 		<div className="min-h-screen bg-gray-100 dark:bg-gray-800">

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { moreItems, NavItem, navItems } from "@/app/data/navItems";
 import { userSettings } from "@/app/data/userSettings";
-import Button from "@/app/components/button";
+import Button from "@/app/components/Button";
 import { Search, ChevronDown, CircleUser } from "lucide-react";
 import ThemeToggle from "@/app/components/ThemeToggle";
 
@@ -99,7 +99,7 @@ const Navigation = () => {
 					id="navbar-search">
 					{/* Navigation Items */}
 					<ul className="flex p-4 md:p-0 mt-4 font-medium rounded-lg md:space-x-1 lg:space-x-6  md:mt-0 md:border-0">
-						{navItems.map((item) => {
+						{navItems.map((item: NavItem) => {
 							return (
 								<li key={item.id}>
 									<Link
