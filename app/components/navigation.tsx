@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { moreItems, navItems } from "@/app/data/navItems";
+import { moreItems, NavItem, navItems } from "@/app/data/navItems";
 import { userSettings } from "@/app/data/userSettings";
 import Button from "@/app/components/button";
 import { Search, ChevronDown, CircleUser } from "lucide-react";
