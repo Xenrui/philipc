@@ -1,5 +1,5 @@
 import { pool } from '@/lib/db';
-import { Row, Review } from '@/app/data/types';
+import { Row, Review } from '@/types/types';
 
 interface ReviewsResponse {
     success: boolean;

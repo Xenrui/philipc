@@ -1,4 +1,4 @@
-import { Row, User } from '@/app/data/types';
+import { Row, User } from '@/types/types';
 import { pool } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 

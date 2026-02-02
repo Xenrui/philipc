@@ -1,4 +1,4 @@
-import { Product, RatingSummary, Review, Row, User } from '@/app/data/types';
+import { Product, RatingSummary, Review, Row, User } from '@/types/types';
 import { pool } from '@/lib/db';
 
 interface GetUserResponse {
