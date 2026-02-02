@@ -155,7 +155,8 @@ export async function filterProducts(filters: Filters): Promise<GetProductRespon
     let query = `SELECT products.*, CONCAT(users.first_name, " ", users.last_name) AS full_name 
                                         FROM products 
                                         JOIN users 
-                                        ON products.seller_id = users.user_id`;
+                                        ON products.seller_id = users.user_id
+                                            AND is_avail = 1`;
 
     query = query += conditions;
 
