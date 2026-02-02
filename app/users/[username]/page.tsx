@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Navigation from '@/components/Navigation';
 import Products from '@/components/products/Products';
 import { useParams } from 'next/navigation';
-import { Product, Review, RatingSummary, User as UserType } from '@/data/types';
+import { Product, Review, RatingSummary, User as UserType } from '@/types/types';
 import { Star, User } from 'lucide-react';
 import Footer from '@/components/Footer';
 

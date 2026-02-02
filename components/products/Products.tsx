@@ -2,7 +2,7 @@ import React from 'react';
 import { User } from 'lucide-react';
 import Image from 'next/image';
 import Button from '@/components/Button';
-import { Product } from '@/data/types';
+import { Product } from '@/types/types';
 import Link from 'next/link';
 
 interface ProductProps {

@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Products from '@/components/products/Products';
 import Navigation from '@/components/Navigation';
 import Dropdown from '@/components/Dropdown';
-import { Product as ProductType } from '@/data/types';
+import { Product as ProductType } from '@/types/types';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { sortOptions, conditionOptions } from '@/data/searchFilters';
 import { ArrowLeft, Filter, Search, X } from 'lucide-react';

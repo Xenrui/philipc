@@ -1,4 +1,4 @@
-import { Product, Row, Seller } from '@/data/types';
+import { Product, Row, Seller } from '@/types/types';
 import { pool } from '@/lib/db';
 
 interface GetProductResponse {

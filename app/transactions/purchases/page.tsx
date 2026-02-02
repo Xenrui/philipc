@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Package, Star, X } from 'lucide-react';
-import { Transaction } from '@/data/types';
+import { Transaction } from '@/types/types';
 
 const PurchasesPage: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);

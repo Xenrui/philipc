@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useActionState, useRef } from 'react';
-import { UserSession, User } from '@/data/types';
+import { UserSession, User } from '@/types/types';
 import Navigation from '@/components/Navigation';
 import Link from 'next/link';
 import Image from 'next/image';

@@ -11,7 +11,7 @@ import ProductImageCarousel from '@/components/products/ProductImageCarousel';
 import ProductInfoSection from '@/components/products/ProductInfoSection';
 import SellerInfoSection from '@/components/products/SellerInfoSection';
 import ProductReviews from '@/components/products/ProductReviews';
-import { Product as ProductType, Seller, UserSession, Review, Transaction } from '@/data/types';
+import { Product as ProductType, Seller, UserSession, Review, Transaction } from '@/types/types';
 import { ArrowLeft } from 'lucide-react';
 import { deleteProductAction } from './actions';
 

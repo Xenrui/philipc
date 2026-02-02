@@ -9,7 +9,7 @@ import { conditionOptions, categoryOptions } from '@/data/searchFilters';
 import Dropdown from '@/components/Dropdown';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
-import { UserSession } from '@/data/types';
+import { UserSession } from '@/types/types';
 import { createListing, CreateListingState } from './actions';
 
 const CreateListingPage: React.FC = () => {

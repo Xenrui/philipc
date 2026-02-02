@@ -1,5 +1,4 @@
 import { Cpu, Gpu, MemoryStick, HardDrive, Keyboard } from 'lucide-react';
-import React from 'react';
 
 export const navItems = [
     { id: 'cpu', label: 'CPU', href: '/products?category=cpu', icon: Cpu },
@@ -18,11 +17,3 @@ export const moreItems = [
     { id: 'monitors', label: 'Monitors', href: '/products?category=monitors' },
     { id: 'miscellaneous', label: 'Miscellaneous', href: '/products?category=misc' },
 ];
-
-export interface NavItem {
-    id: string;
-    label: string;
-    href: string;
-    icon?: React.ComponentType<{ className?: string }>;
-    current?: boolean;
-}

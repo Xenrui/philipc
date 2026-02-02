@@ -7,7 +7,7 @@ import { verifySession } from '@/lib/session';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { r2 } from '@/lib/r2';
 import { pool } from '@/lib/db';
-import { Row } from '@/data/types';
+import { Row } from '@/types/types';
 import crypto from 'crypto';
 
 export type CreateListingState =

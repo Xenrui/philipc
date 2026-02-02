@@ -1,4 +1,4 @@
-import { CreateProductInput } from '@/data/types';
+import { CreateProductInput } from '@/types/types';
 import { getProducts, postProduct, filterProducts } from '@/lib/queries/products';
 import { verifySession } from '@/lib/session';
 

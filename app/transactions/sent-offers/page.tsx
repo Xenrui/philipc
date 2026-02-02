@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Package } from 'lucide-react';
-import { OfferWithDetails } from '@/data/types';
+import { OfferWithDetails } from '@/types/types';
 
 const SentOffersPage: React.FC = () => {
     const [offers, setOffers] = useState<OfferWithDetails[]>([]);

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Offer } from '@/data/types';
+import { Offer } from '@/types/types';
 import { Clock, Check, X, User, PhilippinePeso } from 'lucide-react';
 
 interface SellerOffersProps {

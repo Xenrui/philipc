@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Products from '@/components/products/Products';
 import CategoriesList from '@/components/CategoriesList';
 import Footer from '@/components/Footer';
-import { Product as ProductType } from '@/data/types';
+import { Product as ProductType } from '@/types/types';
 
 const Home: React.FC = () => {
     const [products, setProducts] = useState<ProductType[]>([]);

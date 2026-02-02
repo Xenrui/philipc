@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { decrypt } from '@/lib/session';
 import { pool } from '@/lib/db';
-import { Row, UserSession } from '@/data/types';
+import { Row, UserSession } from '@/types/types';
 
 export async function GET(): Promise<Response> {
     const cookie = await cookies();

@@ -1,154 +1,28 @@
 'use client';
 
-import React, { JSX, useActionState, useState, useTransition, useMemo } from 'react';
+import React, { useState, useTransition, useActionState } from 'react';
 import Link from 'next/link';
 import { signup, SignupState } from './actions';
-import Image from 'next/image';
 import { page1Schema, page2Schema, page3Schema } from '@/schema/signup';
+import { SignupNavigation } from '@/components/ui/SignUpNavigation';
+import { FloatingLabelInput } from '@/components/ui/FloatingLabel';
+import { PhoneInput } from '@/components/ui/PhoneInput';
+import {
+    SignupFormData,
+    FormErrors,
+    CLIENT_TO_SERVER_FIELD_MAP,
+    SERVER_TO_CLIENT_FIELD_MAP,
+} from '@/types/signup.types';
+import { prepareFormDataForSubmission, prepareDataForValidation } from '@/utils/formDataHelpers';
+import { SIGNUP_CONFIG } from '@/constants/signup.constants';
 
-// Types
-interface SignupFormData {
-    firstName: string;
-    lastName: string;
-    contactNo: string;
-    fbLink: string;
-    email: string;
-    username: string;
-    password: string;
-    confirmPassword: string;
-}
-
-type FormErrors = Partial<Record<keyof SignupFormData, string>>;
-
-// Constants
-const TOTAL_PAGES = 3;
-const PHONE_MAX_LENGTH = 10;
-
-// Navigation Component
-const SignupNavigation = ({
-    page,
-    onNext,
-    onPrev,
-}: {
-    page: number;
-    onNext: () => void;
-    onPrev: () => void;
-}): JSX.Element => {
-    const dots = useMemo(
-        () =>
-            Array.from({ length: TOTAL_PAGES }, (_, i) => (
-                <div
-                    key={i}
-                    className={`h-2 w-2 rounded-full ${
-                        page === i + 1 ? 'bg-blue-600' : 'bg-gray-300'
-                    }`}
-                />
-            )),
-        [page]
-    );
-
-    return (
-        <div className="flex flex-col items-center pt-3">
-            <div className="flex items-center justify-center gap-6 text-2xl">
-                <button
-                    type="button"
-                    className={`${
-                        page === 1
-                            ? 'cursor-default opacity-30 select-none'
-                            : 'cursor-pointer hover:text-blue-600'
-                    }`}
-                    onClick={onPrev}
-                    disabled={page === 1}
-                    aria-label="Previous page"
-                >
-                    ←
-                </button>
-
-                <div
-                    className="flex items-center gap-2"
-                    role="navigation"
-                    aria-label="Page indicators"
-                >
-                    {dots}
-                </div>
-
-                <button
-                    type="button"
-                    className={`${
-                        page === TOTAL_PAGES
-                            ? 'cursor-default opacity-30 select-none'
-                            : 'cursor-pointer hover:text-blue-600'
-                    }`}
-                    onClick={onNext}
-                    disabled={page === TOTAL_PAGES}
-                    aria-label="Next page"
-                >
-                    →
-                </button>
-            </div>
-        </div>
-    );
-};
-
-// input component
-const FloatingLabelInput = ({
-    id,
-    label,
-    type = 'text',
-    value,
-    onChange,
-    error,
-    required = false,
-    maxLength,
-    autoComplete,
-}: {
-    id: string;
-    label: string;
-    type?: string;
-    value: string;
-    onChange: (value: string) => void;
-    error?: string;
-    required?: boolean;
-    maxLength?: number;
-    autoComplete?: string;
-}): JSX.Element => (
-    <div className="relative">
-        <input
-            id={id}
-            type={type}
-            required={required}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder=" "
-            maxLength={maxLength}
-            autoComplete={autoComplete}
-            aria-invalid={!!error}
-            aria-describedby={error ? `${id}-error` : undefined}
-            className="focus:outline-primary focus:border-primary peer z-5 block w-full rounded-md border border-gray-300 bg-transparent px-2 py-2.5 pt-5 text-sm text-gray-900 shadow-sm hover:cursor-text focus:ring-0"
-        />
-        <label
-            htmlFor={id}
-            className="text-neutral peer-focus:text-primary absolute top-3 z-10 origin-left -translate-y-2 scale-75 transform px-3 text-sm duration-300 peer-placeholder-shown:translate-y-1 peer-placeholder-shown:scale-100 peer-focus:start-0 peer-focus:-translate-y-2 peer-focus:scale-75 hover:cursor-text"
-        >
-            {label}
-        </label>
-        {error && (
-            <p
-                id={`${id}-error`}
-                className="mt-1 text-xs text-red-600"
-                role="alert"
-            >
-                {error}
-            </p>
-        )}
-    </div>
-);
-
-const SignupPage: React.FC = () => {
+/**
+ * Custom hook for managing signup form state and validation
+ */
+function useSignupForm() {
     const [page, setPage] = useState(1);
     const [isPending, startTransition] = useTransition();
     const [clientErrors, setClientErrors] = useState<FormErrors>({});
-
     const [formData, setFormData] = useState<SignupFormData>({
         firstName: '',
         lastName: '',
@@ -162,7 +36,9 @@ const SignupPage: React.FC = () => {
 
     const [state, signupAction] = useActionState<SignupState, FormData>(signup, undefined);
 
-    // field update handler
+    /**
+     * Updates a form field and clears its error
+     */
     const updateField = (field: keyof SignupFormData, value: string): void => {
         setFormData((prev) => ({ ...prev, [field]: value }));
         setClientErrors((prev) => {
@@ -171,70 +47,52 @@ const SignupPage: React.FC = () => {
         });
     };
 
-    // get error - merge client and server errors
+    /**
+     * Gets error for a field (client-side or server-side)
+     */
     const getError = (field: keyof SignupFormData): string | undefined => {
+        // Client-side errors take priority
         if (clientErrors[field]) return clientErrors[field];
+
+        // Check for server-side errors
         if (!state?.errors) return undefined;
 
-        const fieldMap: Record<keyof SignupFormData, string> = {
-            firstName: 'first_name',
-            lastName: 'last_name',
-            contactNo: 'contact_no',
-            fbLink: 'fb_link',
-            email: 'email',
-            username: 'username',
-            password: 'password',
-            confirmPassword: 'confirm_password',
-        };
-
-        const serverField = fieldMap[field];
+        const serverField = CLIENT_TO_SERVER_FIELD_MAP[field];
         const errors = state.errors as Record<string, string[] | undefined>;
         return errors[serverField]?.[0];
     };
 
-    // validation using Zod
+    /**
+     * Validates the current page using Zod schemas
+     */
     const validateCurrentPage = (): boolean => {
         const errors: FormErrors = {};
+        const dataToValidate = prepareDataForValidation(formData);
 
-        const dataToValidate = {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            contact_no: formData.contactNo,
-            fb_link: formData.fbLink,
-            email: formData.email,
-            username: formData.username,
-            password: formData.password,
-            confirm_password: formData.confirmPassword,
-        };
-
+        // Select the appropriate schema based on current page
         let result;
-
-        if (page === 1) {
-            result = page1Schema.safeParse(dataToValidate);
-        } else if (page === 2) {
-            result = page2Schema.safeParse(dataToValidate);
-        } else if (page === 3) {
-            result = page3Schema.safeParse(dataToValidate);
+        switch (page) {
+            case 1:
+                result = page1Schema.safeParse(dataToValidate);
+                break;
+            case 2:
+                result = page2Schema.safeParse(dataToValidate);
+                break;
+            case 3:
+                result = page3Schema.safeParse(dataToValidate);
+                break;
+            default:
+                return true;
         }
 
+        // Process validation errors
         if (result && !result.success) {
             const fieldErrors = result.error.flatten().fieldErrors;
 
-            const reverseFieldMap: Record<string, keyof SignupFormData> = {
-                first_name: 'firstName',
-                last_name: 'lastName',
-                contact_no: 'contactNo',
-                fb_link: 'fbLink',
-                email: 'email',
-                username: 'username',
-                password: 'password',
-                confirm_password: 'confirmPassword',
-            };
-
-            Object.entries(fieldErrors).forEach(([key, messages]) => {
-                const camelKey = reverseFieldMap[key];
-                if (camelKey && messages && messages.length > 0) {
-                    errors[camelKey] = messages[0];
+            Object.entries(fieldErrors).forEach(([serverKey, messages]) => {
+                const clientKey = SERVER_TO_CLIENT_FIELD_MAP[serverKey];
+                if (clientKey && messages && messages.length > 0) {
+                    errors[clientKey] = messages[0];
                 }
             });
         }
@@ -243,34 +101,65 @@ const SignupPage: React.FC = () => {
         return Object.keys(errors).length === 0;
     };
 
-    const nextPage = (): void => {
-        if (validateCurrentPage()) setPage((p) => Math.min(p + 1, TOTAL_PAGES));
+    /**
+     * Navigates to the next page if validation passes
+     */
+    const handleNextPage = (): void => {
+        if (validateCurrentPage()) {
+            setPage((p) => Math.min(p + 1, SIGNUP_CONFIG.TOTAL_PAGES));
+        }
     };
 
-    const prevPage = (): void => setPage((p) => Math.max(p - 1, 1));
+    /**
+     * Navigates to the previous page
+     */
+    const handlePrevPage = (): void => {
+        setPage((p) => Math.max(p - 1, 1));
+    };
 
+    /**
+     * Handles form submission
+     */
     const handleSubmit = (e: React.FormEvent): void => {
         e.preventDefault();
 
         if (!validateCurrentPage()) return;
 
-        const submitData = new FormData();
-        submitData.append('first_name', formData.firstName);
-        submitData.append('last_name', formData.lastName);
-        submitData.append('contact_no', formData.contactNo);
-        submitData.append('fb_link', formData.fbLink);
-        submitData.append('email', formData.email);
-        submitData.append('username', formData.username);
-        submitData.append('password', formData.password);
-        submitData.append('confirm_password', formData.confirmPassword);
+        const submitData = prepareFormDataForSubmission(formData);
 
         startTransition(() => {
             signupAction(submitData);
         });
     };
 
+    return {
+        page,
+        isPending,
+        formData,
+        state,
+        updateField,
+        getError,
+        handleNextPage,
+        handlePrevPage,
+        handleSubmit,
+    };
+}
+
+const SignupPage: React.FC = () => {
+    const {
+        page,
+        isPending,
+        formData,
+        state,
+        updateField,
+        getError,
+        handleNextPage,
+        handlePrevPage,
+        handleSubmit,
+    } = useSignupForm();
+
     return (
-        <div className="relativ z-10 mt-10 flex w-full max-w-md flex-col rounded-lg bg-white p-8 shadow-md">
+        <div className="relative z-10 mt-10 flex w-full max-w-md flex-col rounded-lg bg-white p-8 shadow-md">
             <h2 className="mb-6 text-center text-xl font-bold text-gray-900 md:text-2xl lg:text-3xl">
                 Create Account!
             </h2>
@@ -279,6 +168,7 @@ const SignupPage: React.FC = () => {
                 onSubmit={handleSubmit}
                 className="space-y-4"
             >
+                {/* Global Error Message */}
                 {state?.errors?.general && (
                     <div
                         className="rounded-md bg-red-50 p-3"
@@ -288,9 +178,9 @@ const SignupPage: React.FC = () => {
                     </div>
                 )}
 
+                {/* Page 1: Personal Information */}
                 {page === 1 && (
                     <>
-                        {/* First Name Input */}
                         <FloatingLabelInput
                             id="first_name"
                             label="First Name"
@@ -298,9 +188,9 @@ const SignupPage: React.FC = () => {
                             onChange={(val) => updateField('firstName', val)}
                             error={getError('firstName')}
                             required
+                            autoComplete="given-name"
                         />
 
-                        {/* Last Name Input */}
                         <FloatingLabelInput
                             id="last_name"
                             label="Last Name"
@@ -308,65 +198,30 @@ const SignupPage: React.FC = () => {
                             onChange={(val) => updateField('lastName', val)}
                             error={getError('lastName')}
                             required
+                            autoComplete="family-name"
                         />
 
-                        {/* Contact No. Input */}
-                        <div className="flex items-start gap-2">
-                            <div className="flex items-center gap-2 pt-5">
-                                <Image
-                                    src="/ph_flag.svg"
-                                    alt="Philippines Flag"
-                                    width={24}
-                                    height={24}
-                                />
-                                <span className="text-sm text-gray-700">+63</span>
-                            </div>
-
-                            <div className="relative flex-1">
-                                <input
-                                    id="contact_no"
-                                    type="tel"
-                                    required
-                                    value={formData.contactNo}
-                                    onChange={(e) => updateField('contactNo', e.target.value)}
-                                    placeholder=" "
-                                    maxLength={PHONE_MAX_LENGTH}
-                                    autoComplete="tel"
-                                    aria-invalid={!!getError('contactNo')}
-                                    aria-describedby={
-                                        getError('contactNo') ? 'contact_no-error' : undefined
-                                    }
-                                    className="focus:outline-primary focus:border-primary peer z-5 block w-full rounded-md border border-gray-300 bg-transparent px-2 py-2.5 pt-5 text-sm text-gray-900 shadow-sm hover:cursor-text focus:ring-0"
-                                />
-                                <label
-                                    htmlFor="contact_no"
-                                    className="text-neutral peer-focus:text-primary absolute top-3 z-10 origin-left -translate-y-2 scale-75 transform px-3 text-sm duration-300 peer-placeholder-shown:translate-y-1 peer-placeholder-shown:scale-100 peer-focus:start-0 peer-focus:-translate-y-2 peer-focus:scale-75 hover:cursor-text"
-                                >
-                                    Contact No.
-                                </label>
-                                {getError('contactNo') && (
-                                    <p
-                                        id="contact_no-error"
-                                        className="mt-1 text-xs text-red-600"
-                                        role="alert"
-                                    >
-                                        {getError('contactNo')}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
+                        <PhoneInput
+                            id="contact_no"
+                            value={formData.contactNo}
+                            onChange={(val) => updateField('contactNo', val)}
+                            error={getError('contactNo')}
+                            maxLength={SIGNUP_CONFIG.PHONE_MAX_LENGTH}
+                            required
+                        />
 
                         <SignupNavigation
                             page={page}
-                            onNext={nextPage}
-                            onPrev={prevPage}
+                            totalPages={SIGNUP_CONFIG.TOTAL_PAGES}
+                            onNext={handleNextPage}
+                            onPrev={handlePrevPage}
                         />
                     </>
                 )}
 
+                {/* Page 2: Social Media */}
                 {page === 2 && (
                     <>
-                        {/* FB Link Input */}
                         <FloatingLabelInput
                             id="fb_link"
                             label="Facebook Link (Optional)"
@@ -374,19 +229,21 @@ const SignupPage: React.FC = () => {
                             value={formData.fbLink}
                             onChange={(val) => updateField('fbLink', val)}
                             error={getError('fbLink')}
+                            autoComplete="url"
                         />
 
                         <SignupNavigation
                             page={page}
-                            onNext={nextPage}
-                            onPrev={prevPage}
+                            totalPages={SIGNUP_CONFIG.TOTAL_PAGES}
+                            onNext={handleNextPage}
+                            onPrev={handlePrevPage}
                         />
                     </>
                 )}
 
+                {/* Page 3: Account Credentials */}
                 {page === 3 && (
                     <>
-                        {/* Email Input */}
                         <FloatingLabelInput
                             id="email"
                             label="Email Address"
@@ -395,9 +252,9 @@ const SignupPage: React.FC = () => {
                             onChange={(val) => updateField('email', val)}
                             error={getError('email')}
                             required
+                            autoComplete="email"
                         />
 
-                        {/* Username Input */}
                         <FloatingLabelInput
                             id="username"
                             label="Username"
@@ -405,9 +262,9 @@ const SignupPage: React.FC = () => {
                             onChange={(val) => updateField('username', val)}
                             error={getError('username')}
                             required
+                            autoComplete="username"
                         />
 
-                        {/* Password Input */}
                         <FloatingLabelInput
                             id="password"
                             label="Password"
@@ -416,9 +273,9 @@ const SignupPage: React.FC = () => {
                             onChange={(val) => updateField('password', val)}
                             error={getError('password')}
                             required
+                            autoComplete="new-password"
                         />
 
-                        {/* Confirm Password Input */}
                         <FloatingLabelInput
                             id="confirm_password"
                             label="Confirm Password"
@@ -427,29 +284,32 @@ const SignupPage: React.FC = () => {
                             onChange={(val) => updateField('confirmPassword', val)}
                             error={getError('confirmPassword')}
                             required
+                            autoComplete="new-password"
                         />
 
                         <SignupNavigation
                             page={page}
-                            onNext={nextPage}
-                            onPrev={prevPage}
+                            totalPages={SIGNUP_CONFIG.TOTAL_PAGES}
+                            onNext={handleNextPage}
+                            onPrev={handlePrevPage}
                         />
 
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="mt-6 flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="mt-6 flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {isPending ? 'Signing up...' : 'Sign Up'}
                         </button>
                     </>
                 )}
 
+                {/* Footer */}
                 <p className="text-center text-xs text-gray-600">
-                    Already have an account?
+                    Already have an account?{' '}
                     <Link
                         href="/login"
-                        className="ml-1 rounded-xl border border-gray-300 p-2 font-semibold text-blue-600 shadow-md hover:bg-gray-100"
+                        className="ml-1 rounded-xl border border-gray-300 p-2 font-semibold text-blue-600 shadow-md transition-colors hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                     >
                         Log In
                     </Link>
