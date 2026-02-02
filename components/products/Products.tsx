@@ -1,8 +1,8 @@
 import React from 'react';
 import { User } from 'lucide-react';
 import Image from 'next/image';
-import Button from '@/app/components/Button';
-import { Product } from '@/app/data/types';
+import Button from '@/components/Button';
+import { Product } from '@/data/types';
 import Link from 'next/link';
 
 interface ProductProps {

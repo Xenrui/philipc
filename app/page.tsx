@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Banner from '@/app/components/HomeBanner';
-import Navigation from '@/app/components/Navigation';
+import Banner from '@/components/HomeBanner';
+import Navigation from '@/components/Navigation';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import Products from '@/app/components/products/Products';
-import CategoriesList from '@/app/components/CategoriesList';
-import Footer from '@/app/components/Footer';
-import { Product as ProductType } from '@/app/data/types';
+import Products from '@/components/products/Products';
+import CategoriesList from '@/components/CategoriesList';
+import Footer from '@/components/Footer';
+import { Product as ProductType } from '@/data/types';
 
 const Home: React.FC = () => {
     const [products, setProducts] = useState<ProductType[]>([]);

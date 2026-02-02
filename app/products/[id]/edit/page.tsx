@@ -2,15 +2,15 @@
 
 import React, { useState, useCallback, useActionState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Navigation from '@/app/components/Navigation';
-import Footer from '@/app/components/Footer';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import { ArrowLeft, Upload, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { conditionOptions, categoryOptions } from '@/app/data/searchFilters';
-import Dropdown from '@/app/components/Dropdown';
+import { conditionOptions, categoryOptions } from '@/data/searchFilters';
+import Dropdown from '@/components/Dropdown';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
-import { UserSession } from '@/app/data/types';
+import { UserSession } from '@/data/types';
 import { updateListing, UpdateListingState } from './actions';
 
 const EditListingPage: React.FC = () => {

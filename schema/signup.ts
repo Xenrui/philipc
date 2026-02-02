@@ -4,7 +4,7 @@ export const signupSchema = z
     .object({
         first_name: z.string().min(1, { message: 'First name is required' }).trim(),
         last_name: z.string().min(1, { message: 'Last name is required' }).trim(),
-        email: z.string().email({ message: 'Invalid email address' }).trim(),
+        email: z.email({ message: 'Invalid email address' }).trim(),
         contact_no: z
             .string()
             .regex(/^9\d{9}$/, { message: 'Contact number must be in format 9XXXXXXXXX' })

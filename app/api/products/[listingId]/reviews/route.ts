@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifySession } from '@/app/lib/session';
-import { addReviewIfEligible, getProductReviews } from '@/app/lib/queries/reviews';
+import { verifySession } from '@/lib/session';
+import { addReviewIfEligible, getProductReviews } from '@/lib/queries/reviews';
 
 export async function GET(
     req: Request,

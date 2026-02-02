@@ -1,5 +1,5 @@
-import { verifySession } from '@/app/lib/session';
-import { createOffer, getOffersForListing, updateOfferStatus } from '@/app/lib/queries/offers';
+import { verifySession } from '@/lib/session';
+import { createOffer, getOffersForListing, updateOfferStatus } from '@/lib/queries/offers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(

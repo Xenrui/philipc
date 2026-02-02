@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Product as ProductType, UserSession } from '@/app/data/types';
+import { Product as ProductType, UserSession } from '@/data/types';
 import { Edit, Trash2, MapPin, Share2, Copy, Check, Phone, Facebook } from 'lucide-react';
 
 interface ProductInfoSectionProps {

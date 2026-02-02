@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { moreItems, NavItem, navItems } from '@/app/data/navItems';
-import { userSettings } from '@/app/data/userSettings';
-import Button from '@/app/components/Button';
+import { moreItems, NavItem, navItems } from '@/data/navItems';
+import { userSettings } from '@/data/userSettings';
+import Button from '@/components/Button';
 import { Search, ChevronDown, CircleUser, Menu, User2, LogOut } from 'lucide-react';
-import ThemeToggle from '@/app/components/ThemeToggle';
+import ThemeToggle from '@/components/ThemeToggle';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { logout } from '@/app/(auth)/login/actions';
-import { UserSession } from '@/app/data/types';
+import { UserSession } from '@/data/types';
 
 const Navigation: React.FC = () => {
     const [user, setUser] = useState<UserSession | null>(null);

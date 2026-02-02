@@ -1,5 +1,5 @@
-import { pool } from '@/app/lib/db';
-import { OfferWithDetails, Row, Transaction } from '@/app/data/types';
+import { pool } from '@/lib/db';
+import { OfferWithDetails, Row, Transaction } from '@/data/types';
 
 export async function getUserPurchases(
     userId: number

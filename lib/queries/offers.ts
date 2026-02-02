@@ -1,5 +1,5 @@
-import { Row, Offer } from '@/app/data/types';
-import { pool } from '@/app/lib/db';
+import { Row, Offer } from '@/data/types';
+import { pool } from '@/lib/db';
 
 interface createProductResponse {
     success: boolean;

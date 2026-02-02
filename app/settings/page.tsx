@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useActionState, useRef } from 'react';
-import { UserSession, User } from '@/app/data/types';
-import Navigation from '@/app/components/Navigation';
+import { UserSession, User } from '@/data/types';
+import Navigation from '@/components/Navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, CircleUser, Upload, User as UserIcon } from 'lucide-react';
-import Footer from '@/app/components/Footer';
+import Footer from '@/components/Footer';
 
 // etong function na to laman yung galing sa lib/queries, which is yung gumagawa ng sql update mismo
 import { update, UpdateUserState } from './actions';

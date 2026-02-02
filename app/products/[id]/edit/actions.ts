@@ -2,12 +2,12 @@
 
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
-import { verifySession } from '@/app/lib/session';
+import { verifySession } from '@/lib/session';
 import {
     verifyProductOwnership,
     updateProduct,
     updateProductImages,
-} from '@/app/lib/queries/updateProduct';
+} from '@/lib/queries/updateProduct';
 
 export type UpdateListingState =
     | {

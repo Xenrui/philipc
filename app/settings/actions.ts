@@ -1,7 +1,7 @@
 'use server';
 
-import { updateUser } from '@/app/lib/queries/user';
-import { uploadProfileImage, deleteProfileImage } from '@/app/lib/uploadToR2';
+import { updateUser } from '@/lib/queries/user';
+import { uploadProfileImage, deleteProfileImage } from '@/lib/uploadToR2';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 

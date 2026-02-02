@@ -1,4 +1,4 @@
-import { pool } from '@/app/lib/db';
+import { pool } from '@/lib/db';
 import { Row, Review } from '@/app/data/types';
 
 interface ReviewsResponse {

@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import Products from '@/app/components/products/Products';
-import Navigation from '@/app/components/Navigation';
-import Dropdown from '@/app/components/Dropdown';
-import { Product as ProductType } from '@/app/data/types';
+import Products from '@/components/products/Products';
+import Navigation from '@/components/Navigation';
+import Dropdown from '@/components/Dropdown';
+import { Product as ProductType } from '@/data/types';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { sortOptions, conditionOptions } from '@/app/data/searchFilters';
+import { sortOptions, conditionOptions } from '@/data/searchFilters';
 import { ArrowLeft, Filter, Search, X } from 'lucide-react';
 import Link from 'next/link';
-import Footer from '@/app/components/Footer';
+import Footer from '@/components/Footer';
 
 const ProductsPage: React.FC = () => {
     const searchParams = useSearchParams();

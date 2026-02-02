@@ -1,6 +1,6 @@
-import { getSpecificProduct } from '@/app/lib/queries/specificProduct';
-import { pool } from '@/app/lib/db';
-import { Row } from '@/app/data/types';
+import { getSpecificProduct } from '@/lib/queries/specificProduct';
+import { pool } from '@/lib/db';
+import { Row } from '@/data/types';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(

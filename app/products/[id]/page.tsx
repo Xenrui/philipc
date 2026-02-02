@@ -3,15 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Navigation from '@/app/components/Navigation';
-import Footer from '@/app/components/Footer';
-import Products from '@/app/components/products/Products';
-import SellerOffers from '@/app/components/products/SellerOffers';
-import ProductImageCarousel from '@/app/components/products/ProductImageCarousel';
-import ProductInfoSection from '@/app/components/products/ProductInfoSection';
-import SellerInfoSection from '@/app/components/products/SellerInfoSection';
-import ProductReviews from '@/app/components/products/ProductReviews';
-import { Product as ProductType, Seller, UserSession, Review, Transaction } from '@/app/data/types';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
+import Products from '@/components/products/Products';
+import SellerOffers from '@/components/products/SellerOffers';
+import ProductImageCarousel from '@/components/products/ProductImageCarousel';
+import ProductInfoSection from '@/components/products/ProductInfoSection';
+import SellerInfoSection from '@/components/products/SellerInfoSection';
+import ProductReviews from '@/components/products/ProductReviews';
+import { Product as ProductType, Seller, UserSession, Review, Transaction } from '@/data/types';
 import { ArrowLeft } from 'lucide-react';
 import { deleteProductAction } from './actions';
 

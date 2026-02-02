@@ -1,7 +1,7 @@
 'use server';
 
-import { verifySession } from '@/app/lib/session';
-import { verifyProductOwnership, deleteProduct } from '@/app/lib/queries/updateProduct';
+import { verifySession } from '@/lib/session';
+import { verifyProductOwnership, deleteProduct } from '@/lib/queries/updateProduct';
 
 export async function deleteProductAction(listingId: number): Promise<{
     success: boolean;

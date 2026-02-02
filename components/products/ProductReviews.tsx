@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Review, UserSession } from '@/app/data/types';
+import { Review, UserSession } from '@/data/types';
 import { Star, Send } from 'lucide-react';
 import Dropdown from '../Dropdown';
 

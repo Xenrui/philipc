@@ -1,10 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createSession } from '@/app/lib/session';
-import { signUp } from '@/app/lib/queries/signUp';
+import { createSession } from '@/lib/session';
+import { signUp } from '@/lib/queries/signUp';
 import bcrypt from 'bcryptjs';
-import { signupSchema } from '@/app/validations/signup';
+import { signupSchema } from '@/schema/signup';
 
 export type SignupState =
     | {

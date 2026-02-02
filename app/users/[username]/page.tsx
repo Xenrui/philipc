@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import Navigation from '@/app/components/Navigation';
-import Products from '@/app/components/products/Products';
+import Navigation from '@/components/Navigation';
+import Products from '@/components/products/Products';
 import { useParams } from 'next/navigation';
-import { Product, Review, RatingSummary, User as UserType } from '@/app/data/types';
+import { Product, Review, RatingSummary, User as UserType } from '@/data/types';
 import { Star, User } from 'lucide-react';
-import Footer from '@/app/components/Footer';
+import Footer from '@/components/Footer';
 
 const UserPage: React.FC = () => {
     const { username } = useParams();

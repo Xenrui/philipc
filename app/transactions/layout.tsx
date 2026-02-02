@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
-import Navigation from '@/app/components/Navigation';
-import Footer from '@/app/components/Footer';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import TransactionTabs from './components/TransactionTabs';
 import TransactionSummary from './components/TransactionSummary';
 import Link from 'next/link';

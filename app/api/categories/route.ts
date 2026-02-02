@@ -1,4 +1,4 @@
-import { getCategories } from '@/app/lib/queries/categories';
+import { getCategories } from '@/lib/queries/categories';
 
 export async function GET(): Promise<Response> {
     const categories = await getCategories();

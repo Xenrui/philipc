@@ -1,5 +1,5 @@
-import { verifySession } from '@/app/lib/session';
-import { getReceivedOffersPending } from '@/app/lib/queries/transactions';
+import { verifySession } from '@/lib/session';
+import { getReceivedOffersPending } from '@/lib/queries/transactions';
 import { NextResponse } from 'next/server';
 
 export async function GET(): Promise<NextResponse> {

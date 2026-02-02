@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { decrypt } from './app/lib/session';
+import { decrypt } from './lib/session';
 
 export default async function middleware(req: NextRequest): Promise<NextResponse> {
     const path = req.nextUrl.pathname;

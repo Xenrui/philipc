@@ -1,5 +1,5 @@
-import { Product, Row, Seller } from '@/app/data/types';
-import { pool } from '@/app/lib/db';
+import { Product, Row, Seller } from '@/data/types';
+import { pool } from '@/lib/db';
 
 interface GetProductResponse {
     success: boolean;

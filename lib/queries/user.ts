@@ -1,5 +1,5 @@
 import { Product, RatingSummary, Review, Row, User } from '@/app/data/types';
-import { pool } from '@/app/lib/db';
+import { pool } from '@/lib/db';
 
 interface GetUserResponse {
     success: boolean;

@@ -4,7 +4,7 @@ import React, { JSX, useActionState, useState, useTransition, useMemo } from 're
 import Link from 'next/link';
 import { signup, SignupState } from './actions';
 import Image from 'next/image';
-import { page1Schema, page2Schema, page3Schema } from '@/app/validations/signup';
+import { page1Schema, page2Schema, page3Schema } from '@/schema/signup';
 
 // Types
 interface SignupFormData {

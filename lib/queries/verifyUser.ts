@@ -1,5 +1,5 @@
 import { Row, User } from '@/app/data/types';
-import { pool } from '@/app/lib/db';
+import { pool } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
 interface GetVerifyUserResponse {

@@ -1,9 +1,9 @@
 'use server';
 
 import { z } from 'zod';
-import { createSession, deleteSession } from '@/app/lib/session';
+import { createSession, deleteSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
-import { verifyUser } from '@/app/lib/queries/verifyUser';
+import { verifyUser } from '@/lib/queries/verifyUser';
 
 export type LoginState =
     | {

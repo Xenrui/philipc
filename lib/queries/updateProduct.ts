@@ -1,7 +1,7 @@
-import { pool } from '@/app/lib/db';
+import { pool } from '@/lib/db';
 import { Row } from '@/app/data/types';
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { r2 } from '@/app/lib/r2';
+import { r2 } from '@/lib/r2';
 import crypto from 'crypto';
 
 interface UpdateProductInput {
