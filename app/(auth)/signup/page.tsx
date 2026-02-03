@@ -3,7 +3,7 @@
 import React, { useState, useTransition, useActionState } from 'react';
 import Link from 'next/link';
 import { signup, SignupState } from './actions';
-import { page1Schema, page2Schema, page3Schema } from '@/schema/signup';
+import { page1Schema, page2Schema, page3Schema } from '@/lib/schema/signup';
 import { SignupNavigation } from '@/components/ui/SignUpNavigation';
 import { FloatingLabelInput } from '@/components/ui/FloatingLabel';
 import { PhoneInput } from '@/components/ui/PhoneInput';

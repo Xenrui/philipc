@@ -19,7 +19,7 @@ const loginSchema = z.object({
     password: z.string().min(3, { message: 'Password must be at least 3 characters' }).trim(),
 });
 
-export async function login(prevState: LoginState, formData: FormData): Promise<LoginState> {
+export async function login(_prevState: LoginState, formData: FormData): Promise<LoginState> {
     const result = loginSchema.safeParse(Object.fromEntries(formData));
 
     if (!result.success) {

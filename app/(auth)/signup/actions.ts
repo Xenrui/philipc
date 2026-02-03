@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { createSession } from '@/lib/session';
 import { signUp } from '@/lib/queries/signUp';
 import bcrypt from 'bcryptjs';
-import { signupSchema } from '@/schema/signup';
+import { signupSchema } from '@/lib/schema/signup';
 
 export type SignupState =
     | {
