@@ -1,321 +1,207 @@
 'use client';
 
-import React, { useState, useTransition, useActionState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { signup, SignupState } from './actions';
-import { page1Schema, page2Schema, page3Schema } from '@/lib/schema/signup';
-import { SignupNavigation } from '@/components/ui/SignUpNavigation';
-import { FloatingLabelInput } from '@/components/ui/FloatingLabel';
-import { PhoneInput } from '@/components/ui/PhoneInput';
 import {
-    SignupFormData,
-    FormErrors,
-    CLIENT_TO_SERVER_FIELD_MAP,
-    SERVER_TO_CLIENT_FIELD_MAP,
-} from '@/types/signup.types';
-import { prepareFormDataForSubmission, prepareDataForValidation } from '@/utils/formDataHelpers';
-import { SIGNUP_CONFIG } from '@/constants/signup.constants';
-
-/**
- * Custom hook for managing signup form state and validation
- */
-function useSignupForm() {
-    const [page, setPage] = useState(1);
-    const [isPending, startTransition] = useTransition();
-    const [clientErrors, setClientErrors] = useState<FormErrors>({});
-    const [formData, setFormData] = useState<SignupFormData>({
-        firstName: '',
-        lastName: '',
-        contactNo: '',
-        fbLink: '',
-        email: '',
-        username: '',
-        password: '',
-        confirmPassword: '',
-    });
-
-    const [state, signupAction] = useActionState<SignupState, FormData>(signup, undefined);
-
-    /**
-     * Updates a form field and clears its error
-     */
-    const updateField = (field: keyof SignupFormData, value: string): void => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-        setClientErrors((prev) => {
-            const { [field]: _, ...rest } = prev;
-            return rest;
-        });
-    };
-
-    /**
-     * Gets error for a field (client-side or server-side)
-     */
-    const getError = (field: keyof SignupFormData): string | undefined => {
-        // Client-side errors take priority
-        if (clientErrors[field]) return clientErrors[field];
-
-        // Check for server-side errors
-        if (!state?.errors) return undefined;
-
-        const serverField = CLIENT_TO_SERVER_FIELD_MAP[field];
-        const errors = state.errors as Record<string, string[] | undefined>;
-        return errors[serverField]?.[0];
-    };
-
-    /**
-     * Validates the current page using Zod schemas
-     */
-    const validateCurrentPage = (): boolean => {
-        const errors: FormErrors = {};
-        const dataToValidate = prepareDataForValidation(formData);
-
-        // Select the appropriate schema based on current page
-        let result;
-        switch (page) {
-            case 1:
-                result = page1Schema.safeParse(dataToValidate);
-                break;
-            case 2:
-                result = page2Schema.safeParse(dataToValidate);
-                break;
-            case 3:
-                result = page3Schema.safeParse(dataToValidate);
-                break;
-            default:
-                return true;
-        }
-
-        // Process validation errors
-        if (result && !result.success) {
-            const fieldErrors = result.error.flatten().fieldErrors;
-
-            Object.entries(fieldErrors).forEach(([serverKey, messages]) => {
-                const clientKey = SERVER_TO_CLIENT_FIELD_MAP[serverKey];
-                if (clientKey && messages && messages.length > 0) {
-                    errors[clientKey] = messages[0];
-                }
-            });
-        }
-
-        setClientErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
-
-    /**
-     * Navigates to the next page if validation passes
-     */
-    const handleNextPage = (): void => {
-        if (validateCurrentPage()) {
-            setPage((p) => Math.min(p + 1, SIGNUP_CONFIG.TOTAL_PAGES));
-        }
-    };
-
-    /**
-     * Navigates to the previous page
-     */
-    const handlePrevPage = (): void => {
-        setPage((p) => Math.max(p - 1, 1));
-    };
-
-    /**
-     * Handles form submission
-     */
-    const handleSubmit = (e: React.FormEvent): void => {
-        e.preventDefault();
-
-        if (!validateCurrentPage()) return;
-
-        const submitData = prepareFormDataForSubmission(formData);
-
-        startTransition(() => {
-            signupAction(submitData);
-        });
-    };
-
-    return {
-        page,
-        isPending,
-        formData,
-        state,
-        updateField,
-        getError,
-        handleNextPage,
-        handlePrevPage,
-        handleSubmit,
-    };
-}
+    Paper,
+    Typography,
+    Stepper,
+    Step,
+    StepLabel,
+    Button,
+    Box,
+    Alert,
+    CircularProgress,
+    Skeleton,
+} from '@mui/material';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { useSignupForm } from './hooks/useSignupForm';
+import { PersonalInfoStep, AccountDetailsStep, ReviewStep } from './components';
+import { STEP_LABELS } from './types';
 
 const SignupPage: React.FC = () => {
     const {
-        page,
-        isPending,
+        activeStep,
         formData,
-        state,
+        errors,
+        isSubmitting,
+        submitError,
+        isHydrated,
         updateField,
-        getError,
-        handleNextPage,
-        handlePrevPage,
+        handleNext,
+        handleBack,
         handleSubmit,
+        canProceed,
     } = useSignupForm();
 
-    return (
-        <div className="relative z-10 mt-10 flex w-full max-w-md flex-col rounded-lg bg-white p-8 shadow-md">
-            <h2 className="mb-6 text-center text-xl font-bold text-gray-900 md:text-2xl lg:text-3xl">
-                Create Account!
-            </h2>
+    const isLastStep = activeStep === STEP_LABELS.length - 1;
 
-            <form
-                onSubmit={handleSubmit}
-                className="space-y-4"
+    const renderStepContent = (): React.ReactNode => {
+        switch (activeStep) {
+            case 0:
+                return (
+                    <PersonalInfoStep
+                        formData={formData}
+                        errors={errors}
+                        onFieldChange={updateField}
+                    />
+                );
+            case 1:
+                return (
+                    <AccountDetailsStep
+                        formData={formData}
+                        errors={errors}
+                        onFieldChange={updateField}
+                    />
+                );
+            case 2:
+                return <ReviewStep formData={formData} />;
+            default:
+                return null;
+        }
+    };
+
+    // Loading skeleton while hydrating from localStorage
+    if (!isHydrated) {
+        return (
+            <Paper
+                elevation={2}
+                sx={{ p: { xs: 2.5, sm: 3 }, width: '100%' }}
             >
-                {/* Global Error Message */}
-                {state?.errors?.general && (
-                    <div
-                        className="rounded-md bg-red-50 p-3"
-                        role="alert"
+                <Skeleton
+                    variant="text"
+                    sx={{ fontSize: '1.5rem', mb: 1.5 }}
+                />
+                <Skeleton
+                    variant="rectangular"
+                    height={50}
+                    sx={{ mb: 3 }}
+                />
+                <Skeleton
+                    variant="rectangular"
+                    height={180}
+                />
+            </Paper>
+        );
+    }
+
+    return (
+        <Paper
+            elevation={2}
+            sx={{ p: { xs: 2.5, sm: 3 }, width: '100%' }}
+        >
+            {/* Header */}
+            <Typography
+                variant="h5"
+                component="h1"
+                textAlign="center"
+                fontWeight="bold"
+                sx={{ mb: 2 }}
+            >
+                Create Account
+            </Typography>
+
+            {/* Stepper - Compact */}
+            <Stepper
+                activeStep={activeStep}
+                alternativeLabel
+                sx={{
+                    mb: 3,
+                    '& .MuiStepLabel-label': {
+                        fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                        mt: 0.5,
+                    },
+                    '& .MuiStepIcon-root': {
+                        fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                    },
+                }}
+            >
+                {STEP_LABELS.map((label) => (
+                    <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                    </Step>
+                ))}
+            </Stepper>
+
+            {/* Error Alert */}
+            {submitError && (
+                <Alert
+                    severity="error"
+                    sx={{ mb: 2, py: 0.5 }}
+                >
+                    {submitError}
+                </Alert>
+            )}
+
+            {/* Step Content */}
+            <Box sx={{ mb: 3 }}>{renderStepContent()}</Box>
+
+            {/* Navigation Buttons */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    gap: 1.5,
+                }}
+            >
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={handleBack}
+                    disabled={activeStep === 0 || isSubmitting}
+                    startIcon={<ArrowLeft size={16} />}
+                    sx={{ minWidth: 100 }}
+                >
+                    Back
+                </Button>
+
+                {isLastStep ? (
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        startIcon={
+                            isSubmitting ? <CircularProgress size={16} /> : <Check size={16} />
+                        }
+                        sx={{ minWidth: 140 }}
                     >
-                        <p className="text-sm text-red-800">{state.errors.general[0]}</p>
-                    </div>
+                        {isSubmitting ? 'Creating...' : 'Create Account'}
+                    </Button>
+                ) : (
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleNext}
+                        disabled={!canProceed()}
+                        endIcon={<ArrowRight size={16} />}
+                        sx={{ minWidth: 100 }}
+                    >
+                        Next
+                    </Button>
                 )}
+            </Box>
 
-                {/* Page 1: Personal Information */}
-                {page === 1 && (
-                    <>
-                        <FloatingLabelInput
-                            id="first_name"
-                            label="First Name"
-                            value={formData.firstName}
-                            onChange={(val) => updateField('firstName', val)}
-                            error={getError('firstName')}
-                            required
-                            autoComplete="given-name"
-                        />
-
-                        <FloatingLabelInput
-                            id="last_name"
-                            label="Last Name"
-                            value={formData.lastName}
-                            onChange={(val) => updateField('lastName', val)}
-                            error={getError('lastName')}
-                            required
-                            autoComplete="family-name"
-                        />
-
-                        <PhoneInput
-                            id="contact_no"
-                            value={formData.contactNo}
-                            onChange={(val) => updateField('contactNo', val)}
-                            error={getError('contactNo')}
-                            maxLength={SIGNUP_CONFIG.PHONE_MAX_LENGTH}
-                            required
-                        />
-
-                        <SignupNavigation
-                            page={page}
-                            totalPages={SIGNUP_CONFIG.TOTAL_PAGES}
-                            onNext={handleNextPage}
-                            onPrev={handlePrevPage}
-                        />
-                    </>
-                )}
-
-                {/* Page 2: Social Media */}
-                {page === 2 && (
-                    <>
-                        <FloatingLabelInput
-                            id="fb_link"
-                            label="Facebook Link (Optional)"
-                            type="url"
-                            value={formData.fbLink}
-                            onChange={(val) => updateField('fbLink', val)}
-                            error={getError('fbLink')}
-                            autoComplete="url"
-                        />
-
-                        <SignupNavigation
-                            page={page}
-                            totalPages={SIGNUP_CONFIG.TOTAL_PAGES}
-                            onNext={handleNextPage}
-                            onPrev={handlePrevPage}
-                        />
-                    </>
-                )}
-
-                {/* Page 3: Account Credentials */}
-                {page === 3 && (
-                    <>
-                        <FloatingLabelInput
-                            id="email"
-                            label="Email Address"
-                            type="email"
-                            value={formData.email}
-                            onChange={(val) => updateField('email', val)}
-                            error={getError('email')}
-                            required
-                            autoComplete="email"
-                        />
-
-                        <FloatingLabelInput
-                            id="username"
-                            label="Username"
-                            value={formData.username}
-                            onChange={(val) => updateField('username', val)}
-                            error={getError('username')}
-                            required
-                            autoComplete="username"
-                        />
-
-                        <FloatingLabelInput
-                            id="password"
-                            label="Password"
-                            type="password"
-                            value={formData.password}
-                            onChange={(val) => updateField('password', val)}
-                            error={getError('password')}
-                            required
-                            autoComplete="new-password"
-                        />
-
-                        <FloatingLabelInput
-                            id="confirm_password"
-                            label="Confirm Password"
-                            type="password"
-                            value={formData.confirmPassword}
-                            onChange={(val) => updateField('confirmPassword', val)}
-                            error={getError('confirmPassword')}
-                            required
-                            autoComplete="new-password"
-                        />
-
-                        <SignupNavigation
-                            page={page}
-                            totalPages={SIGNUP_CONFIG.TOTAL_PAGES}
-                            onNext={handleNextPage}
-                            onPrev={handlePrevPage}
-                        />
-
-                        <button
-                            type="submit"
-                            disabled={isPending}
-                            className="mt-6 flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            {isPending ? 'Signing up...' : 'Sign Up'}
-                        </button>
-                    </>
-                )}
-
-                {/* Footer */}
-                <p className="text-center text-xs text-gray-600">
+            {/* Footer */}
+            <Box sx={{ mt: 2.5, textAlign: 'center' }}>
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                >
                     Already have an account?{' '}
                     <Link
                         href="/login"
-                        className="ml-1 rounded-xl border border-gray-300 p-2 font-semibold text-blue-600 shadow-md transition-colors hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+                        style={{
+                            fontWeight: 600,
+                            textDecoration: 'underline',
+                        }}
+                        className="text-primary"
                     >
                         Log In
                     </Link>
-                </p>
-            </form>
-        </div>
+                </Typography>
+            </Box>
+        </Paper>
     );
 };
 

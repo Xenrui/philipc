@@ -22,7 +22,7 @@ export type SignupState =
       }
     | undefined;
 
-export async function signup(prevState: SignupState, formData: FormData): Promise<SignupState> {
+export async function signup(_prevState: SignupState, formData: FormData): Promise<SignupState> {
     const result = signupSchema.safeParse(Object.fromEntries(formData));
 
     if (!result.success) {

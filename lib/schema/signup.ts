@@ -26,22 +26,23 @@ export const signupSchema = z
         path: ['confirm_password'],
     });
 
-// partial schemas for each page
+// Step 1: Personal Information (first name, last name, contact number, optional fb link)
 export const page1Schema = signupSchema.pick({
     first_name: true,
     last_name: true,
     contact_no: true,
-});
-
-export const page2Schema = signupSchema.pick({
     fb_link: true,
 });
 
-export const page3Schema = signupSchema.pick({
+// Step 2: Account Details (email, username, password, confirm password)
+export const page2Schema = signupSchema.pick({
     email: true,
     username: true,
     password: true,
     confirm_password: true,
 });
+
+// Step 3: Review - validates all fields
+export const page3Schema = signupSchema;
 
 export type SignupFormData = z.infer<typeof signupSchema>;
