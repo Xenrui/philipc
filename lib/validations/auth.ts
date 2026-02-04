@@ -30,4 +30,9 @@ export const signupSchema = z
         path: ['confirm_password'],
     });
 
+export const loginSchema = z.object({
+    username: z.string().min(1, { message: 'Username or email is required' }).trim(),
+    password: z.string().min(3, { message: 'Password must be at least 3 characters' }).trim(),
+});
 export type SignupFormData = z.infer<typeof signupSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;

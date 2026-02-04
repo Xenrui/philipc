@@ -2,9 +2,15 @@ import { UserRepository } from '@/lib/repositories/UserRepository';
 import { CreateUserInput } from '@/types/user.types';
 import bcrypt from 'bcryptjs';
 
+interface LoginUserInput {
+    username: string;
+    password: string;
+}
+
 export class AuthService {
     private userRepo = new UserRepository();
-    async login(username: string, password: string) {
+
+    async login({ username, password }: LoginUserInput): Promise<number> {
         let user = await this.userRepo.findByUsername(username);
 
         if (!user) {
@@ -20,6 +26,7 @@ export class AuthService {
         if (!isPasswordValid) {
             throw new Error('Invalid credentials');
         }
+        return user.user_id;
     }
 
     async register(data: CreateUserInput): Promise<number> {
