@@ -9,7 +9,6 @@ import Button from '@/components/Button';
 import { Search, ChevronDown, CircleUser, Menu, User2, LogOut } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { logout } from '@/app/(auth)/login/actions';
 import { UserSession } from '@/types/types';
 
 export interface NavItem {
@@ -50,10 +49,13 @@ const Navigation: React.FC = () => {
 
     const handleLogout = async (): Promise<void> => {
         try {
-            await logout();
-            setUser(null);
-        } catch (error) {
-            console.error('Logout failed:', error);
+            await fetch('api/logout', {
+                method: 'POST',
+            });
+            router.push('/login');
+            router.refresh();
+        } catch (err) {
+            console.error(err);
         }
     };
 
