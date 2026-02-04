@@ -38,6 +38,7 @@ interface UseSignupFormReturn {
     handleBack: () => void;
     handleSubmit: () => Promise<boolean>;
     canProceed: () => boolean;
+    resetForm: () => void;
 }
 
 /**
@@ -267,6 +268,17 @@ export function useSignupForm(): UseSignupFormReturn {
         }
     }, [formData, toServerFormat, validateStep, clearStorage]);
 
+    /**
+     * Reset all form data and return to first step
+     */
+    const resetForm = useCallback((): void => {
+        setFormData(INITIAL_FORM_DATA);
+        setErrors({});
+        setSubmitError(null);
+        setActiveStep(0);
+        clearStorage();
+    }, [clearStorage]);
+
     return {
         activeStep,
         formData,
@@ -279,5 +291,6 @@ export function useSignupForm(): UseSignupFormReturn {
         handleBack,
         handleSubmit,
         canProceed,
+        resetForm,
     };
 }

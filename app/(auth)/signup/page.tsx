@@ -13,8 +13,10 @@ import {
     Alert,
     CircularProgress,
     Skeleton,
+    IconButton,
+    Tooltip,
 } from '@mui/material';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, RotateCcw } from 'lucide-react';
 import { useSignupForm } from './hooks/useSignupForm';
 import { PersonalInfoStep, AccountDetailsStep, ReviewStep } from './components';
 import { STEP_LABELS } from './types';
@@ -32,6 +34,7 @@ const SignupPage: React.FC = () => {
         handleBack,
         handleSubmit,
         canProceed,
+        resetForm,
     } = useSignupForm();
 
     const isLastStep = activeStep === STEP_LABELS.length - 1;
@@ -91,15 +94,27 @@ const SignupPage: React.FC = () => {
             sx={{ p: { xs: 2.5, sm: 3 }, width: '100%' }}
         >
             {/* Header */}
-            <Typography
-                variant="h5"
-                component="h1"
-                textAlign="center"
-                fontWeight="bold"
-                sx={{ mb: 2 }}
-            >
-                Create Account
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                <Typography
+                    variant="h5"
+                    component="h1"
+                    textAlign="center"
+                    fontWeight="bold"
+                >
+                    Create Account
+                </Typography>
+                <Tooltip title="Reset form">
+                    <IconButton
+                        size="small"
+                        onClick={resetForm}
+                        disabled={isSubmitting}
+                        sx={{ ml: 1 }}
+                        aria-label="Reset form"
+                    >
+                        <RotateCcw size={18} />
+                    </IconButton>
+                </Tooltip>
+            </Box>
 
             {/* Stepper - Compact */}
             <Stepper
