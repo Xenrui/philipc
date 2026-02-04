@@ -1,33 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { decrypt } from './lib/session';
+import { verifyToken } from '@/lib/jwt';
 
-export default async function middleware(req: NextRequest): Promise<NextResponse> {
-    const path = req.nextUrl.pathname;
-    const cookie = await cookies();
-    const session = cookie.get('session')?.value;
-    const decryptedSession = await decrypt(session);
-    const isAuthenticated = !!decryptedSession?.userId;
+export default async function middleware(request: NextRequest): Promise<NextResponse> {
+    const path = request.nextUrl.pathname;
 
-    // Protected routes that require authentication
+    const token = request.cookies.get('session')?.value;
+
     const protectedPaths = ['/sell', '/settings', '/profile', '/products/'];
-    const isProtectedRoute = protectedPaths.some((route) => path.startsWith(route));
-
-    // Auth routes that logged-in users shouldn't access
     const authPaths = ['/login', '/signup'];
-    const isAuthRoute = authPaths.some((route) => path.startsWith(route));
+    const publicPaths = ['/'];
 
-    // Redirect unauthenticated users to login
-    if (isProtectedRoute && !isAuthenticated) {
-        if (path === '/products') {
-            return NextResponse.redirect(new URL('/', req.nextUrl));
+    const isProtectedRoute = protectedPaths.some((route) => path.startsWith(route));
+    const isAuthRoute = authPaths.some((route) => path.startsWith(route));
+    const isPublicRoute = publicPaths.some((route) => path === route);
+
+    if (isPublicRoute) {
+        return NextResponse.next();
+    }
+
+    // There is no token
+    if (!token) {
+        if (isProtectedRoute) {
+            return NextResponse.redirect(new URL('/login', request.nextUrl));
         }
-        return NextResponse.redirect(new URL('/login', req.nextUrl));
+        return NextResponse.next();
+    }
+
+    const payload = await verifyToken(token);
+
+    // Payload invalid
+    if (!payload) {
+        const response = NextResponse.redirect(new URL('/login', request.nextUrl));
+        response.cookies.delete('session');
+        return response;
     }
 
     // Redirect authenticated users away from auth pages
+    const isAuthenticated = true;
+
+    // Redirect authenticated users away from auth pages
     if (isAuthRoute && isAuthenticated) {
-        return NextResponse.redirect(new URL('/', req.nextUrl));
+        return NextResponse.redirect(new URL('/', request.nextUrl));
     }
 
     return NextResponse.next();

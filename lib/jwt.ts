@@ -1,4 +1,6 @@
+'use server';
 import { jwtVerify, SignJWT } from 'jose';
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export type SessionPayLoad = {
@@ -32,7 +34,7 @@ export async function verifyToken(token: string): Promise<SessionPayLoad | null>
     }
 }
 
-export function setSessionCookie(response: NextResponse, token: string): void {
+export async function setSessionCookie(response: NextResponse, token: string): Promise<void> {
     response.cookies.set('session', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -40,4 +42,9 @@ export function setSessionCookie(response: NextResponse, token: string): void {
         path: '/',
         maxAge: 60 * 60 * 24 * 7,
     });
+}
+
+export async function deleteSession(): Promise<void> {
+    const cookie = await cookies();
+    cookie.delete('session');
 }
