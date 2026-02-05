@@ -9,8 +9,8 @@ import Button from '@/components/Button';
 import { Search, ChevronDown, CircleUser, Menu, User2, LogOut } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { UserSession } from '@/types/types';
-import { deleteSession } from '@/lib/jwt';
+import { deleteSession, getCurrentUser } from '@/lib/jwt';
+import { SafeUser } from '@/types/user.types';
 
 export interface NavItem {
     id: string;
@@ -21,7 +21,7 @@ export interface NavItem {
 }
 
 const Navigation: React.FC = () => {
-    const [user, setUser] = useState<UserSession | null>(null);
+    const [user, setUser] = useState<SafeUser | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -35,11 +35,8 @@ const Navigation: React.FC = () => {
     useEffect(() => {
         const fetchUser = async (): Promise<void> => {
             try {
-                const response = await fetch('/api/session');
-                if (response.ok) {
-                    const data = await response.json();
-                    setUser(data.user || null);
-                }
+                const user = await getCurrentUser();
+                setUser(user || null);
             } catch (error) {
                 console.error('Failed to fetch user:', error);
                 setUser(null);
