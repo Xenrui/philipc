@@ -4,9 +4,10 @@ import Image from 'next/image';
 import Button from '@/components/Button';
 import { Product } from '@/types/types';
 import Link from 'next/link';
+import { LandingProduct } from '@/types/products';
 
 interface ProductProps {
-    product: Product;
+    product: LandingProduct;
     showUser?: boolean;
     showStatus?: boolean;
 }

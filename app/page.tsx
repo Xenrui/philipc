@@ -1,6 +1,3 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
 import Banner from '@/components/HomeBanner';
 import Navigation from '@/components/Navigation';
 import { ChevronRight } from 'lucide-react';
@@ -8,30 +5,11 @@ import Link from 'next/link';
 import Products from '@/components/products/Products';
 import CategoriesList from '@/components/CategoriesList';
 import Footer from '@/components/Footer';
-import { Product as ProductType } from '@/types/types';
+import { getLandingAllProducts } from '@/lib/dal/product-repository';
+import { JSX } from 'react';
 
-const Home: React.FC = () => {
-    const [products, setProducts] = useState<ProductType[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchProducts = async (): Promise<void> => {
-            try {
-                const res = await fetch('/api/products');
-                if (!res.ok) throw new Error('Failed to Fetch');
-                const json = await res.json();
-                const { products } = json.data;
-
-                setProducts(products);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProducts();
-    }, []);
+const Home = async (): Promise<JSX.Element> => {
+    const products = await getLandingAllProducts();
 
     return (
         <div className="flex min-h-screen flex-col bg-gray-200 dark:bg-gray-900">
@@ -58,16 +36,7 @@ const Home: React.FC = () => {
                             </Link>
                         </div>
                     </div>
-                    {loading && (
-                        <div className="mb-4 grid grid-flow-row gap-5 p-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div
-                                    key={i}
-                                    className="h-80 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600"
-                                ></div>
-                            ))}
-                        </div>
-                    )}
+
                     <div className="mb-4 grid grid-flow-row gap-5 px-2 py-5 sm:grid-cols-2 md:px-5 lg:grid-cols-3 xl:grid-cols-4">
                         {products.map((product) => {
                             return (
