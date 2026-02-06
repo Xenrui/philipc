@@ -1,6 +1,7 @@
 export const sortOptions = [
-    { id: 1, label: 'Low to High', value: 'asc' },
-    { id: 2, label: 'High to Low', value: 'desc' },
+    { id: 1, label: 'Newest First', value: 'newest' },
+    { id: 2, label: 'Price: Low to High', value: 'asc' },
+    { id: 3, label: 'Price: High to Low', value: 'desc' },
 ];
 
 export const conditionOptions = [

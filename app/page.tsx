@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Products from '@/components/products/Products';
 import CategoriesList from '@/components/CategoriesList';
 import Footer from '@/components/Footer';
-import { getLandingAllProducts } from '@/lib/dal/product-repository';
+import { getLandingAllProducts } from '@/lib/dal/product-dal';
 import { JSX } from 'react';
 
 const Home = async (): Promise<JSX.Element> => {
