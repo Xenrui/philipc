@@ -9,7 +9,7 @@ import Button from '@/components/Button';
 import { Search, ChevronDown, CircleUser, Menu, User2, LogOut } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { deleteSession, getCurrentUser } from '@/lib/jwt';
+import { deleteSession, getCurrentUser } from '@/lib/auth';
 import { SafeUser } from '@/types/user.types';
 
 export interface NavItem {

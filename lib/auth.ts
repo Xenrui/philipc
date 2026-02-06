@@ -4,6 +4,7 @@ import { SafeUser } from '@/types/user.types';
 import { jwtVerify, SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { cache } from 'react';
 
 export type SessionPayLoad = {
     userId: number;
@@ -51,13 +52,13 @@ export async function deleteSession(): Promise<void> {
     cookie.delete('session');
 }
 
-export async function getCurrentUser(): Promise<SafeUser | null> {
+export const getCurrentUser = cache(async (): Promise<SafeUser | null> => {
     const cookieStore = await cookies();
     const token = cookieStore.get('session')?.value;
 
     if (!token) return null;
 
-    const payload = await verifyToken(token); // Fast!
+    const payload = await verifyToken(token);
 
     if (!payload) return null;
 
@@ -66,4 +67,4 @@ export async function getCurrentUser(): Promise<SafeUser | null> {
     const user = userService.getUserById(payload.userId);
 
     return user;
-}
+});

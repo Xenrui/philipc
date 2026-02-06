@@ -1,6 +1,5 @@
 import { CreateProductInput } from '@/types/types';
 import { getProducts, postProduct, filterProducts } from '@/lib/queries/products';
-import { verifySession } from '@/lib/session';
 
 export async function GET(req: Request): Promise<Response> {
     const { searchParams } = new URL(req.url);

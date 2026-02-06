@@ -1,4 +1,4 @@
-import { UserRepository } from '@/lib/repositories/UserRepository';
+import { UserRepository } from '@/lib/dal/user-repository';
 import { CreateUserInput } from '@/types/user.types';
 import bcrypt from 'bcryptjs';
 

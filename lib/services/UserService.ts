@@ -1,4 +1,4 @@
-import { UserRepository } from '@/lib/repositories/UserRepository';
+import { UserRepository } from '@/lib/dal/user-repository';
 import { SafeUser, UserRow } from '@/types/user.types';
 
 export class UserService {

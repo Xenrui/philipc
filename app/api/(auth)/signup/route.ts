@@ -1,4 +1,4 @@
-import { SessionPayLoad, setSessionCookie, signToken } from '@/lib/jwt';
+import { SessionPayLoad, setSessionCookie, signToken } from '@/lib/auth';
 import { AuthService } from '@/lib/services/AuthService';
 import { signupSchema } from '@/lib/validations/auth';
 import { NextRequest, NextResponse } from 'next/server';
