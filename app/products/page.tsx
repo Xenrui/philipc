@@ -1,239 +1,148 @@
-'use client';
-
-import React, { useState, useMemo, useEffect } from 'react';
 import Products from '@/components/products/Products';
 import Navigation from '@/components/Navigation';
-import Dropdown from '@/components/Dropdown';
-import { Product as ProductType } from '@/types/types';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { sortOptions, conditionOptions } from '@/data/searchFilters';
-import { ArrowLeft, Filter, Search, X } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
+import { getProducts } from '@/lib/dal/product-dal';
+import { ProductFilters } from '@/types/products';
+import FilterProducts from '@/app/products/filter-products';
+import { JSX, Suspense } from 'react';
 
-const ProductsPage: React.FC = () => {
-    const searchParams = useSearchParams();
-    const router = useRouter();
+type PageProps = {
+    searchParams: Promise<{
+        category?: string;
+        search?: string;
+        condition?: string;
+        minPrice?: string;
+        maxPrice?: string;
+        sort?: string;
+    }>;
+};
 
-    // Read query params or set defaults
-    const categoryQuery = searchParams.get('category') || '';
-    const searchQuery = searchParams.get('search') || '';
-    const conditionQuery = searchParams.get('condition') || '';
-    const minPriceQuery = searchParams.get('minPrice') || ''; //'0';
-    const maxPriceQuery = searchParams.get('maxPrice') || ''; //'50000';
-    const sortQuery = searchParams.get('sort') || '';
+async function ProductsList({ filters }: { filters: ProductFilters }): Promise<JSX.Element> {
+    const products = await getProducts(filters);
 
-    const [condition, setCondition] = useState(conditionQuery);
-    const [minPrice, setMinPrice] = useState(minPriceQuery);
-    const [maxPrice, setMaxPrice] = useState(maxPriceQuery);
-    const [sort, setSort] = useState(sortQuery);
+    return (
+        <>
+            {/* Results Summary */}
+            <div className="mb-4 flex items-center justify-between">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {products.length > 0 ? (
+                        <span>
+                            Showing {products.length} product
+                            {products.length !== 1 ? 's' : ''}
+                            {filters.search && (
+                                <span>
+                                    {' '}
+                                    for &ldquo;
+                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                        {filters.search}
+                                    </span>
+                                    &rdquo;
+                                </span>
+                            )}
+                        </span>
+                    ) : (
+                        <span>No products found</span>
+                    )}
+                </div>
+            </div>
 
-    const [products, setProducts] = useState<ProductType[]>([]);
+            {/* Products Grid or Empty State */}
+            {products.length === 0 ? (
+                <div className="rounded-lg bg-gray-50 p-12 text-center dark:bg-gray-800">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
+                        <span className="text-2xl">📦</span>
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+                        No products found
+                    </h3>
+                    <p className="mb-4 text-gray-500 dark:text-gray-400">
+                        Try adjusting your filters or search terms to find what you&apos;re looking
+                        for.
+                    </p>
+                    <Link
+                        href="/products"
+                        className="inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                    >
+                        Clear all filters
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {products.map((product) => (
+                        <Products
+                            key={product.listing_id}
+                            product={product}
+                            showUser
+                        />
+                    ))}
+                </div>
+            )}
+        </>
+    );
+}
 
-    useEffect(() => {
-        const fetchProducts = async (): Promise<void> => {
-            try {
-                const params = new URLSearchParams();
-                if (categoryQuery) params.set('category', categoryQuery);
-                if (searchQuery) params.set('search', searchQuery);
-                if (condition) params.set('condition', condition);
-                if (minPrice) params.set('minPrice', minPrice);
-                if (maxPrice) params.set('maxPrice', maxPrice);
-                if (sort) params.set('sort', sort);
+function ProductsLoading(): JSX.Element {
+    return (
+        <div className="space-y-4">
+            <div className="h-8 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {[...Array(8)].map((_, i) => (
+                    <div
+                        key={i}
+                        className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+                    ></div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
-                const res = await fetch(`/api/products?${params.toString()}`);
-                if (!res.ok) throw new Error('Failed to fetch products');
+export default async function ProductsPage({ searchParams }: PageProps): Promise<JSX.Element> {
+    const params = await searchParams;
 
-                const json = await res.json();
-                const data = json.data?.products ?? []; // Added this to remove error appearing in console.
-                setProducts(data || []);
-            } catch (error) {
-                console.error(error);
-                setProducts([]);
-            }
-        };
-
-        fetchProducts();
-    }, [categoryQuery, searchQuery, condition, minPrice, maxPrice, sort]);
-
-    // Frontend filtering, to be changed
-    const filteredProducts = useMemo(() => {
-        return products;
-    }, [products]);
-
-    const handleFilterSubmit = (e: React.FormEvent): void => {
-        e.preventDefault();
-
-        const params = new URLSearchParams();
-        if (categoryQuery) params.set('category', categoryQuery);
-        if (condition) params.set('condition', condition);
-        if (minPrice) params.set('minPrice', minPrice);
-        if (maxPrice) params.set('maxPrice', maxPrice);
-        if (sort) params.set('sort', sort);
-
-        if (searchQuery) params.set('search', searchQuery);
-
-        router.push(`/products?${params.toString()}`);
+    const filters: ProductFilters = {
+        category: params.category as ProductFilters['category'],
+        search: params.search,
+        condition: params.condition as ProductFilters['condition'],
+        minPrice: params.minPrice ? Number(params.minPrice) : undefined,
+        maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,
+        sort: params.sort as ProductFilters['sort'],
     };
 
     return (
         <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
             <Navigation />
 
-            <div className="mx-auto mt-4 flex w-full max-w-7xl gap-2 p-4 text-black dark:text-white">
+            {/* Page Header */}
+            <div className="mx-auto mt-4 flex w-full max-w-7xl items-center gap-2 p-4">
                 <Link
-                    className="hover:cursor-pointer"
-                    href={'/'}
+                    href="/"
+                    className="rounded-lg p-2 text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                    aria-label="Back to home"
                 >
-                    <ArrowLeft />
+                    <ArrowLeft className="h-5 w-5" />
                 </Link>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Item Listing</h1>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Browse Products</h1>
             </div>
-            <div className="mx-auto max-w-7xl flex-1 px-4 pb-6 sm:px-6 lg:px-8">
-                {/* Search and Filter Header */}
-                <div className="mb-6 rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            <Filter className="mr-2 inline h-5 w-5" />
-                            Filters & Search
-                        </h2>
-                        {(searchQuery || conditionQuery || minPriceQuery || maxPriceQuery) && (
-                            <button
-                                onClick={() => {
-                                    setCondition('');
-                                    setMinPrice('');
-                                    setMaxPrice('');
-                                    router.push('/products');
-                                }}
-                                className="flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-                            >
-                                <X className="h-4 w-4" />
-                                Clear filters
-                            </button>
-                        )}
-                    </div>
 
-                    <form
-                        onSubmit={handleFilterSubmit}
-                        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-                    >
-                        {/* Sort by Price */}
-                        <Dropdown
-                            label="Sort by Price"
-                            options={sortOptions}
-                            selected={sort}
-                            onChange={setSort}
-                            placeholder="Select sorting..."
-                        />
+            {/* Main Content */}
+            <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-6 sm:px-6 lg:px-8">
+                <Suspense
+                    fallback={
+                        <div className="mb-6 h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+                    }
+                >
+                    <FilterProducts />
+                </Suspense>
 
-                        {/* Condition */}
-                        <Dropdown
-                            label="Condition"
-                            options={conditionOptions}
-                            selected={condition}
-                            onChange={setCondition}
-                            placeholder="Any condition"
-                        />
+                <Suspense fallback={<ProductsLoading />}>
+                    <ProductsList filters={filters} />
+                </Suspense>
+            </main>
 
-                        {/* Price Range */}
-                        <div className="lg:col-span-1">
-                            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Price Range
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="number"
-                                    value={minPrice}
-                                    onChange={(e) => setMinPrice(e.target.value)}
-                                    placeholder="₱0"
-                                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-300"
-                                />
-                                <span className="text-gray-500 dark:text-gray-400">-</span>
-                                <input
-                                    type="number"
-                                    value={maxPrice}
-                                    onChange={(e) => setMaxPrice(e.target.value)}
-                                    placeholder="₱50,000"
-                                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-300"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Apply Button */}
-                        <div className="flex items-end">
-                            <button
-                                type="submit"
-                                className="bg-primary w-full rounded-lg px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                            >
-                                <Search className="mr-2 inline h-4 w-4" />
-                                Apply Filters
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                {/* Results Summary */}
-                <div className="mb-4 flex items-center justify-between">
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {filteredProducts.length > 0 ? (
-                            <span>
-                                Showing {filteredProducts.length} product
-                                {filteredProducts.length !== 1 ? 's' : ''}
-                                {searchQuery && (
-                                    <span>
-                                        {' '}
-                                        for &ldquo;
-                                        <span className="font-semibold text-gray-900 dark:text-white">
-                                            {searchQuery}
-                                        </span>
-                                        &rdquo;
-                                    </span>
-                                )}
-                            </span>
-                        ) : (
-                            <span>No products found</span>
-                        )}
-                    </div>
-                </div>
-
-                {/* Products Grid */}
-                {filteredProducts.length === 0 ? (
-                    <div className="rounded-lg bg-gray-50 p-12 text-center dark:bg-gray-800">
-                        <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                        <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-                            No products found
-                        </h3>
-                        <p className="mb-4 text-gray-500 dark:text-gray-400">
-                            Try adjusting your filters or search terms to find what you&apos;re
-                            looking for.
-                        </p>
-                        <button
-                            onClick={() => {
-                                setCondition('');
-                                setMinPrice('');
-                                setMaxPrice('');
-                                router.push('/products');
-                            }}
-                            className="bg-primary rounded-lg px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                        >
-                            Clear all filters
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {filteredProducts.map((product) => (
-                            <Products
-                                key={product.listing_id}
-                                product={product}
-                                showUser
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
             <Footer />
         </div>
     );
-};
-
-export default ProductsPage;
+}
