@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Offer } from '@/types/types';
+import { Offer } from '@/types/products';
 import { Clock, Check, X, User, PhilippinePeso } from 'lucide-react';
 
 interface SellerOffersProps {
@@ -173,7 +173,9 @@ export default function SellerOffers({
                                                 {offer.buyer_name}
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                {formatDate(offer.created_at)}
+                                                {offer.created_at
+                                                    ? formatDate(String(offer.created_at))
+                                                    : ''}
                                             </p>
                                         </div>
                                     </div>

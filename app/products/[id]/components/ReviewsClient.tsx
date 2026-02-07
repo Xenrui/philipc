@@ -1,28 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { Review, UserSession } from '@/types/products';
-import { Star, Send } from 'lucide-react';
-import Dropdown from '../Dropdown';
+import { Star, Send, AlertCircle } from 'lucide-react';
+import Dropdown from '@/components/Dropdown';
+import { submitReviewAction } from '../actions';
 
-interface ProductReviewsProps {
-    listingId: string;
-    reviews: Review[];
+interface ReviewsClientProps {
+    listingId: number;
+    initialReviews: Review[];
     canReview: boolean;
     user: UserSession | null;
-    onReviewSubmitted: () => void;
 }
 
-const ProductReviews: React.FC<ProductReviewsProps> = ({
+export default function ReviewsClient({
     listingId,
-    reviews,
-    canReview,
-    onReviewSubmitted,
-}) => {
+    initialReviews,
+    canReview: initialCanReview,
+}: ReviewsClientProps): React.JSX.Element | null {
+    const [reviews, setReviews] = useState<Review[]>(initialReviews);
+    const [canReview, setCanReview] = useState(initialCanReview);
     const [reviewRating, setReviewRating] = useState('5');
     const [reviewText, setReviewText] = useState('');
     const [reviewError, setReviewError] = useState('');
-    const [reviewSubmitting, setReviewSubmitting] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     const handleReviewSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
@@ -33,34 +34,33 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             return;
         }
 
-        setReviewSubmitting(true);
+        startTransition(async () => {
+            try {
+                const result = await submitReviewAction(
+                    listingId,
+                    parseInt(reviewRating),
+                    reviewText
+                );
 
-        try {
-            const response = await fetch(`/api/products/${listingId}/reviews`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    rating: parseInt(reviewRating),
-                    text: reviewText,
-                }),
-            });
+                if (!result.success) {
+                    setReviewError(result.message);
+                    return;
+                }
 
-            const data = await response.json();
+                // Clear form and update state
+                setReviewText('');
+                setReviewRating('5');
+                setCanReview(false);
 
-            if (!response.ok) {
-                setReviewError(data.error || 'Failed to submit review');
-                return;
+                // Add the new review to the list (optimistic update)
+                if (result.review) {
+                    setReviews((prev) => [result.review!, ...prev]);
+                }
+            } catch (error) {
+                setReviewError('An error occurred while submitting your review');
+                console.error('Review submission error:', error);
             }
-
-            setReviewText('');
-            setReviewRating('5');
-            onReviewSubmitted();
-        } catch (error) {
-            setReviewError('An error occurred while submitting your review');
-            console.error('Review submission error:', error);
-        } finally {
-            setReviewSubmitting(false);
-        }
+        });
     };
 
     if (reviews.length === 0 && !canReview) {
@@ -107,16 +107,19 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                     </div>
 
                     {reviewError && (
-                        <p className="text-sm text-red-600 dark:text-red-400">{reviewError}</p>
+                        <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+                            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                            <p>{reviewError}</p>
+                        </div>
                     )}
 
                     <button
                         type="submit"
-                        disabled={reviewSubmitting}
+                        disabled={isPending}
                         className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700"
                     >
                         <Send className="h-4 w-4" />
-                        {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                        {isPending ? 'Submitting...' : 'Submit Review'}
                     </button>
                 </form>
             )}
@@ -155,6 +158,4 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             </div>
         </div>
     );
-};
-
-export default ProductReviews;
+}

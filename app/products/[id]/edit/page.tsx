@@ -10,7 +10,7 @@ import { conditionOptions, categoryOptions } from '@/data/searchFilters';
 import Dropdown from '@/components/Dropdown';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
-import { UserSession } from '@/types/types';
+import { UserSession } from '@/types/products';
 import { updateListing, UpdateListingState } from './actions';
 
 const EditListingPage: React.FC = () => {

@@ -46,7 +46,7 @@ const updateListingSchema = z.object({
 });
 
 export async function updateListing(
-    prevState: UpdateListingState,
+    _prevState: UpdateListingState,
     formData: FormData
 ): Promise<UpdateListingState> {
     // Verify user is logged in
